@@ -1,7 +1,8 @@
+import matplotlib.pyplot as plt
 import random
-import networkx as nx
+import time
 
-# Define Agent class
+# Define the Agent class
 class Agent:
     def __init__(self, name, wealth, power, money):
         self.name = name
@@ -27,22 +28,45 @@ class Agent:
 
 # Initialize agents
 agents = [
-    Agent("Country A", wealth=100, power=50, money=200),
-    Agent("Country B", wealth=80, power=70, money=150),
-    Agent("Country C", wealth=120, power=40, money=180)
+    Agent("Ctry A", wealth=100, power=50, money=200),
+    Agent("Ctry B", wealth=80, power=70, money=150),
+    Agent("Ctry C", wealth=120, power=40, money=180)
 ]
 
-# Simulate interactions
+# Store plenty scores over time
+plenty_scores = {agent.name: [agent.plenty_score] for agent in agents}
+
+# Simulate interactions and plot dynamics
+plt.ion()  # Interactive mode
+fig, ax = plt.subplots()
+
 def simulate_round(agents):
     for agent in agents:
         trade_partner = random.choice([a for a in agents if a != agent])
         trade_amount = random.randint(10, 50)
         agent.trade(trade_partner, trade_amount)
 
-# Run the simulation
-for _ in range(10):  # Simulate 10 rounds
+for i in range(10):  # Simulate 10 rounds
     simulate_round(agents)
 
-# Display results
-for agent in agents:
-    print(f"{agent.name}: Wealth={agent.wealth}, Power={agent.power}, Money={agent.money}, Plenty={agent.plenty_score}")
+    # Update plenty scores
+    for agent in agents:
+        plenty_scores[agent.name].append(agent.plenty_score)
+
+    # Plot the updated scores
+    ax.clear()
+    print("Round, Country, Wealth, Power, Money\n")
+    for agent in agents:
+        lbl = "{} W:{} P:{} M:{}".format(agent.name,agent.wealth, agent.power, agent.money)
+        print("{} {} {} {}".format(i,agent.wealth, agent.power, agent.money))
+        ax.plot(plenty_scores[agent.name], label=lbl)
+
+    ax.set_title("Dynamics of Plenty Scores")
+    ax.set_xlabel("Rounds")
+    ax.set_ylabel("Plenty Score")
+    ax.legend()
+    plt.pause(1)  # Pause to simulate real-time updates
+    input()
+
+plt.ioff()
+plt.show()
