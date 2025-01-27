@@ -10,16 +10,22 @@ class Agent:
         self.power = power  # Military/economic influence
         self.money = money  # Gold/liquidity
         self.plenty_score = self.calculate_plenty()
+        self.power_coefficient = 0.4
+        self.wealth_coefficient = 0.4
+        self.money_coefficient = .2
+        self.trade_benefit_coefficient = .5
 
     def calculate_plenty(self):
-        return self.wealth * 0.4 + self.power * 0.4 + self.money * 0.2
+        return (self.wealth * self.wealth_coefficient +
+                self.power * self.power_coefficient +
+                self.money * self.money_coefficient)
 
     def trade(self, other, trade_amount):
         if self.money >= trade_amount:
             self.money -= trade_amount
             other.money += trade_amount
-            self.wealth += trade_amount * 0.5
-            other.wealth += trade_amount * 0.5
+            self.wealth += trade_amount * self.trade_benefit_coefficient
+            other.wealth += trade_amount * self.trade_benefit_coefficient
             self.update_scores()
             other.update_scores()
 
